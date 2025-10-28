@@ -1,6 +1,7 @@
 import 'package:firebase/components/customAuthButton.dart';
 import 'package:firebase/components/customLogoAuth.dart';
 import 'package:firebase/components/textFormField.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Login extends StatefulWidget {
@@ -49,7 +50,22 @@ class _LoginState extends State<Login> {
                 
               ],
             ),
-            CustomAuthButton(text: "Login",onPress: (){},bgcolor: Colors.pinkAccent,),
+            CustomAuthButton(text: "Login",onPress: ()async{
+                                  try {
+                      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                        email: email.text,
+                        password: password.text
+                      );
+
+                      Navigator.of(context).pushNamedAndRemoveUntil("homePage", (route)=>false);
+                    } on FirebaseAuthException catch (e) {
+                      if (e.code == 'user-not-found') {
+                        print('No user found for that email.');
+                      } else if (e.code == 'wrong-password') {
+                        print('Wrong password provided for that user.');
+                      }
+                    }
+            },bgcolor: Colors.pinkAccent,),
 
             SizedBox(height: 20,),
             CustomAuthButton(text: "Login with google",onPress: (){},bgcolor: Colors.green,),

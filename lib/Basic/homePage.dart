@@ -13,7 +13,7 @@ class _HomePageState extends State<HomePage> {
 
   void _signOut() async {
     await _auth.signOut();
-    Navigator.of(context).pushReplacementNamed("login");
+    Navigator.of(context).pushNamedAndRemoveUntil("login",(route)=>false);
   }
 
   @override
@@ -35,16 +35,26 @@ class _HomePageState extends State<HomePage> {
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+
                   Text(
                     "Welcome, ${user.email}",
                     style: const TextStyle(fontSize: 20),
                   ),
                   const SizedBox(height: 20),
                   Text("User ID: ${user.uid}"),
+
+
+                  FirebaseAuth.instance.currentUser!.emailVerified  ?
+                 Text("your email is already verifies") 
+               :MaterialButton(onPressed: (){
+                  FirebaseAuth.instance.currentUser!.sendEmailVerification();
+               },child: 
+                Text("you are not verified verifie now"),color: Colors.blue,
+                textColor: Colors.white,),
                 ],
               )
             : const Text("No user signed in"),
-      ),
-    );
+      ),);
+    
   }
 }

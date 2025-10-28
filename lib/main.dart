@@ -26,38 +26,9 @@ class _AppState extends State<App> {
 
 
   @override
-  void initState() {
-
-FirebaseFirestore.instance.collection('test').add({
-  'name': 'Flutter Firebase',
-  'timestamp': FieldValue.serverTimestamp(),
-}).then((value) {
-  print('Data saved successfully');
-}).catchError((error) {
-  print('Failed to save data: $error');
-});
-
-final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
-
-    analytics.logEvent(
-      name: 'test_event',
-      parameters: {'success': true},
-    );
-
-    FirebaseAuth.instance
-  .authStateChanges()
-  .listen((User? user) {
-    if (user == null) {
-      print('User is currently signed out!');
-    } else {
-      print('User is signed in!');
-    }
-  });
-  }
-  @override
   Widget build(BuildContext context) {
     return MaterialApp(
-    home:Login() ,
+    home:FirebaseAuth.instance.currentUser == null ? Login() : HomePage() ,
     routes: {
       "signup":(context)=> SignUp(),
       "login":(context)=> Login(),

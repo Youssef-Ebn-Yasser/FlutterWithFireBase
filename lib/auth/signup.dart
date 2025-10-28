@@ -19,6 +19,9 @@ class _SignUpState extends State<SignUp> {
   bool isLoading = false;
   String errorMsg = '';
 
+  GlobalKey<FormState> formState = GlobalKey<FormState>();
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,40 +29,43 @@ class _SignUpState extends State<SignUp> {
         padding: EdgeInsets.all(20),
         child: ListView(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CustomAuthLogo(),
-                const SizedBox(height: 20),
-                const Text(
-                  "Sign Up",
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  "Sign up to continue using the app",
-                  style: TextStyle(fontSize: 22, color: Colors.grey),
-                ),
-                const SizedBox(height: 20),
-                const Text("UserName", style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 10),
-                CustomTextForm(hintText: "Enter your user name", controller: userName),
-                const SizedBox(height: 20),
-                const Text("Email", style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 10),
-                CustomTextForm(hintText: "Enter your Email", controller: email),
-                const SizedBox(height: 20),
-                const Text("Password", style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 10),
-                CustomTextForm(hintText: "Enter your password", controller: password),
-                const SizedBox(height: 20),
-                if (errorMsg.isNotEmpty)
-                  Text(
-                    errorMsg,
-                    style: TextStyle(color: Colors.red),
+            Form(
+              key: formState,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomAuthLogo(),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Sign Up",
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   ),
-                const SizedBox(height: 10),
-              ],
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Sign up to continue using the app",
+                    style: TextStyle(fontSize: 22, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text("UserName", style: TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 10),
+                  CustomTextForm(hintText: "Enter your user name", controller: userName),
+                  const SizedBox(height: 20),
+                  const Text("Email", style: TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 10),
+                  CustomTextForm(hintText: "Enter your Email", controller: email),
+                  const SizedBox(height: 20),
+                  const Text("Password", style: TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 10),
+                  CustomTextForm(hintText: "Enter your password", controller: password),
+                  const SizedBox(height: 20),
+                  if (errorMsg.isNotEmpty)
+                    Text(
+                      errorMsg,
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  const SizedBox(height: 10),
+                ],
+              ),
             ),
             isLoading
                 ? const Center(child: CircularProgressIndicator())
@@ -67,7 +73,8 @@ class _SignUpState extends State<SignUp> {
                     text: "Register",
                     bgcolor: Colors.pinkAccent,
                     onPress: () async {
-                      final emailText = email.text.trim();
+                      if(formState.currentState!.validate()){
+final emailText = email.text.trim();
                       final passwordText = password.text.trim();
 
                       if (emailText.isEmpty || passwordText.isEmpty) {
@@ -108,9 +115,8 @@ class _SignUpState extends State<SignUp> {
                         setState(() {
                           isLoading = false;
                         });
-                      }
-                    },
-                  ),
+                      }}
+                   }),
             const SizedBox(height: 20),
             InkWell(
               onTap: () {
