@@ -21,7 +21,6 @@ class _SignUpState extends State<SignUp> {
 
   GlobalKey<FormState> formState = GlobalKey<FormState>();
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,23 +45,38 @@ class _SignUpState extends State<SignUp> {
                     style: TextStyle(fontSize: 22, color: Colors.grey),
                   ),
                   const SizedBox(height: 20),
-                  const Text("UserName", style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text(
+                    "UserName",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 10),
-                  CustomTextForm(hintText: "Enter your user name", controller: userName),
+                  CustomTextForm(
+                    hintText: "Enter your user name",
+                    controller: userName,
+                  ),
                   const SizedBox(height: 20),
-                  const Text("Email", style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text(
+                    "Email",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 10),
-                  CustomTextForm(hintText: "Enter your Email", controller: email),
+                  CustomTextForm(
+                    hintText: "Enter your Email",
+                    controller: email,
+                  ),
                   const SizedBox(height: 20),
-                  const Text("Password", style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text(
+                    "Password",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 10),
-                  CustomTextForm(hintText: "Enter your password", controller: password),
+                  CustomTextForm(
+                    hintText: "Enter your password",
+                    controller: password,
+                  ),
                   const SizedBox(height: 20),
                   if (errorMsg.isNotEmpty)
-                    Text(
-                      errorMsg,
-                      style: TextStyle(color: Colors.red),
-                    ),
+                    Text(errorMsg, style: TextStyle(color: Colors.red)),
                   const SizedBox(height: 10),
                 ],
               ),
@@ -73,66 +87,77 @@ class _SignUpState extends State<SignUp> {
                     text: "Register",
                     bgcolor: Colors.pinkAccent,
                     onPress: () async {
-                      if(formState.currentState!.validate()){
-final emailText = email.text.trim();
-                      final passwordText = password.text.trim();
+                      if (formState.currentState!.validate()) {
+                        final emailText = email.text.trim();
+                        final passwordText = password.text.trim();
 
-                      if (emailText.isEmpty || passwordText.isEmpty) {
+                        if (emailText.isEmpty || passwordText.isEmpty) {
+                          setState(() {
+                            errorMsg = "Email and password cannot be empty!";
+                          });
+                          return;
+                        }
+
                         setState(() {
-                          errorMsg = "Email and password cannot be empty!";
+                          isLoading = true;
+                          errorMsg = '';
                         });
-                        return;
+                        try {
+                          final credential = await FirebaseAuth.instance
+                              .createUserWithEmailAndPassword(
+                                email: emailText,
+                                password: passwordText,
+                              );
+                          await FirebaseAuth.instance.currentUser!
+                              .sendEmailVerification();
+                          Navigator.of(context).pushReplacementNamed("login");
+                        } on FirebaseAuthException catch (e) {
+                          setState(() {
+                            if (e.code == 'weak-password') {
+                              errorMsg = 'The password provided is too weak.';
+                            } else if (e.code == 'email-already-in-use') {
+                              errorMsg =
+                                  'The account already exists for that email.';
+                            } else {
+                              errorMsg = e.message ?? 'Unknown Firebase error';
+                            }
+                          });
+                        } catch (e) {
+                          setState(() {
+                            errorMsg = e.toString();
+                          });
+                        } finally {
+                          setState(() {
+                            isLoading = false;
+                          });
+                        }
                       }
-
-                      setState(() {
-                        isLoading = true;
-                        errorMsg = '';
-                      });
-
-                      try {
-                        final credential = await FirebaseAuth.instance
-                            .createUserWithEmailAndPassword(
-                          email: emailText,
-                          password: passwordText,
-                        );
-
-                        Navigator.of(context).pushReplacementNamed("homePage");
-                      } on FirebaseAuthException catch (e) {
-                        setState(() {
-                          if (e.code == 'weak-password') {
-                            errorMsg = 'The password provided is too weak.';
-                          } else if (e.code == 'email-already-in-use') {
-                            errorMsg = 'The account already exists for that email.';
-                          } else {
-                            errorMsg = e.message ?? 'Unknown Firebase error';
-                          }
-                        });
-                      } catch (e) {
-                        setState(() {
-                          errorMsg = e.toString();
-                        });
-                      } finally {
-                        setState(() {
-                          isLoading = false;
-                        });
-                      }}
-                   }),
+                    },
+                  ),
             const SizedBox(height: 20),
             InkWell(
               onTap: () {
                 Navigator.of(context).pushNamed("login");
               },
               child: const Text.rich(
-                TextSpan(children: [
-                  TextSpan(
-                    text: "Have an account? Go to ",
-                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                  ),
-                  TextSpan(
-                    text: "Login",
-                    style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-                  ),
-                ]),
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: "Have an account? Go to ",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextSpan(
+                      text: "Login",
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
                 textAlign: TextAlign.center,
               ),
             ),
