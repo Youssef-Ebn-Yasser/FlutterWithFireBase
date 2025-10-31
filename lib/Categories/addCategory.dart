@@ -20,6 +20,12 @@ class _AddcategoryState extends State<Addcategory> {
     'Categories',
   );
 
+  @override
+  void dispose() {
+    categoryNameController.dispose();
+    super.dispose();
+  }
+
   addCategories() async {
     isLoading = true;
     setState(() {});

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase/Basic/homePage.dart';
 import 'package:firebase/Categories/addCategory.dart';
 import 'package:firebase/auth/signup.dart';
+import 'package:firebase/notes/add.dart';
 import 'package:firebase/testHttp.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -43,6 +44,10 @@ class _AppState extends State<App> {
         "login": (context) => Login(),
         "homePage": (context) => HomePage(),
         "addcategory": (context) => Addcategory(),
+        "addNote": (context) {
+          final catId = ModalRoute.of(context)!.settings.arguments as String;
+          return AddNote(catId: catId);
+        },
       },
     );
   }

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase/Categories/edit.dart';
+import 'package:firebase/notes/veiw.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -81,6 +82,14 @@ class _HomePageState extends State<HomePage> {
                         );
                   },
 
+                  onDoubleTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            NotePage(catId: categoryList[i].id),
+                      ),
+                    );
+                  },
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
